@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 pylint = "*"
+requests = "*"
+beautifulsoup4 = "*"
 
 [dev-packages]
 

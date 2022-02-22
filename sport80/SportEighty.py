@@ -10,5 +10,8 @@ class SportEighty:
     """
 
     def __init__(self, subdomain: str):
-        resolved_ip = resolve_to_ip(subdomain)
-        self.__http_client = SportEightyHTTP(resolved_ip)
+        self.__http_client = SportEightyHTTP(subdomain)
+
+
+if __name__ == '__main__':
+    pass
