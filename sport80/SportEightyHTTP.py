@@ -1,9 +1,9 @@
 """ Busy backend shit """
-import requests
 import logging
 from urllib.parse import urljoin
-from pages_enum import EndPoint
-from helpers import pull_tables
+import requests
+from .pages_enum import EndPoint
+from .helpers import pull_tables
 
 
 class SportEightyHTTP:

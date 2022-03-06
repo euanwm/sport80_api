@@ -12,18 +12,20 @@ def resolve_to_ip(url: str) -> str:
     return socket.gethostbyname(url)
 
 
-def pull_tables(page_content: Response):
+def pull_tables(page_content: Response) -> list:
     """ Returns a dict with details of all the tables within it """
     soup_parse = BeautifulSoup(page_content.text, "html.parser")
-    table_list = []
+    table_list: list = []
+    formatted_table: list = []
     for tables in soup_parse.find_all("table"):
         table_list.append(tables)
     if len(table_list) > 1:
         info(f"multiple tables: {len(table_list)}")
-        return extract_table(table_list, multiple_tables=True)
+        formatted_table = extract_table(table_list, multiple_tables=True)
     elif len(table_list) == 1:
         info("single table")
-        return extract_table(table_list[0])
+        formatted_table = extract_table(table_list[0])
+    return formatted_table
 
 
 def extract_table(table, multiple_tables=False) -> list:
@@ -50,8 +52,10 @@ def flatten_list(nested_list: list) -> list:
 
 def recursive_anti_nester(nested_list: list) -> list:
     """ IT'S YA BOI, RECURSION! """
+
     class AntiNester(list):
         """ Being simultaneously lazy and extra """
+
         def __init__(self):
             super().__init__()
             self.flat_list: list = []
@@ -61,7 +65,7 @@ def recursive_anti_nester(nested_list: list) -> list:
             for line_count, lines in enumerate(big_list):
                 if not any(isinstance(index, list) for index in lines):
                     self.flat_list.append(lines)
-                    #big_list.pop(line_count)
+                    # big_list.pop(line_count)
                 else:
                     self.flatten_that_shit(big_list[line_count])
 
