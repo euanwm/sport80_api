@@ -14,33 +14,32 @@ class SportEightyHTTP:
         self.domain = domain
         logging.basicConfig(level=debug_lvl)
 
-    def get_event_index(self):
+    def get_event_index(self) -> list:
         """ Returns the main event list """
+        # Todo: Fix "view" column formatting
+        logging.info("get_event_index called")
         api_url = urljoin(self.domain, EndPoint.EVENT_INDEX.value)
         get_page = self.http_session.get(api_url)
-        pull_tables(get_page)
+        return pull_tables(get_page)
 
-    def get_event_results(self, event_id):
+    def get_event_results(self, event_id) -> list:
         """ Returns specific event result """
+        logging.info("get_event_results called")
         api_url = urljoin(self.domain, EndPoint.EVENT_RESULTS.value + event_id)
         get_page = self.http_session.get(api_url)
-        pull_tables(get_page)
+        return pull_tables(get_page)
 
     def get_upcoming_events(self):
         """ Returns the upcoming events list """
+        # Todo: Fix "Entry List" and "Registration" columns
+        logging.info("get_upcoming_events called")
         api_url = urljoin(self.domain, EndPoint.UPCOMING_EVENTS.value)
         get_page = self.http_session.get(api_url)
-        pull_tables(get_page)
+        return pull_tables(get_page)
 
     def get_start_list(self, event_id):
         """ Returns a specific upcoming events start list """
         logging.info("get_start_list called")
         api_url = urljoin(self.domain, EndPoint.START_LIST.value + event_id)
         get_page = self.http_session.get(api_url)
-        pull_tables(get_page)
-
-
-if __name__ == '__main__':
-    thing = SportEightyHTTP("http://bwl.sport80.com", logging.INFO)
-    thing.get_start_list("37905")
-    # thing.get_event_index()
+        return pull_tables(get_page)
