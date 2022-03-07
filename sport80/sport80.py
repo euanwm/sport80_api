@@ -1,5 +1,5 @@
 """ Main file """
-from SportEightyHTTP import SportEightyHTTP
+from .sport80_http_client import SportEightyHTTP
 
 
 class SportEighty:

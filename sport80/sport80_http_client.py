@@ -2,14 +2,14 @@
 import logging
 from urllib.parse import urljoin
 import requests
-from pages_enum import EndPoint
-from helpers import pull_tables
+from .pages_enum import EndPoint
+from .helpers import pull_tables
 
 
 class SportEightyHTTP:
     """ Contains all the big annoying functions so the main API file is nice and neat """
 
-    def __init__(self, domain: str, debug_lvl: logging = logging.INFO):
+    def __init__(self, domain: str, debug_lvl: logging = logging.WARNING):
         self.http_session = requests.Session()
         self.domain = domain
         logging.basicConfig(level=debug_lvl)
