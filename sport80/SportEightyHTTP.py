@@ -2,8 +2,8 @@
 import logging
 from urllib.parse import urljoin
 import requests
-from .pages_enum import EndPoint
-from .helpers import pull_tables
+from pages_enum import EndPoint
+from helpers import pull_tables
 
 
 class SportEightyHTTP:
@@ -16,7 +16,6 @@ class SportEightyHTTP:
 
     def get_event_index(self) -> list:
         """ Returns the main event list """
-        # Todo: Fix "view" column formatting
         logging.info("get_event_index called")
         api_url = urljoin(self.domain, EndPoint.EVENT_INDEX.value)
         get_page = self.http_session.get(api_url)
