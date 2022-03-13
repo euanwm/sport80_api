@@ -30,7 +30,6 @@ class SportEightyHTTP:
 
     def get_upcoming_events(self):
         """ Returns the upcoming events list """
-        # Todo: Fix "Entry List" and "Registration" columns
         logging.info("get_upcoming_events called")
         api_url = urljoin(self.domain, EndPoint.UPCOMING_EVENTS.value)
         get_page = self.http_session.get(api_url)
