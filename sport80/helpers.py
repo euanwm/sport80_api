@@ -7,6 +7,8 @@ from logging import info, debug
 from bs4 import BeautifulSoup
 from requests import Response
 
+from sport80.pages_enum import EndPoint
+
 
 def resolve_to_ip(url: str) -> str:
     """ Returns IP address of the subdomain """
@@ -58,6 +60,7 @@ def recursive_anti_nester(nested_list: list) -> list:
 
     class AntiNester(list):
         """ Being simultaneously lazy and extra """
+
         def __init__(self):
             super().__init__()
             self.flat_list: list = []
@@ -98,7 +101,10 @@ def strip_table_body(table):
                 cells.append(tbl_hdr.text.strip())
         else:
             for tbl_dat in tds:
-                if len(tbl_dat.find_all('i')) == 1:
+                links = tbl_dat.find_all(href=True)
+                if len(links) == 1:
+                    cells.append(strip_report_id(links[0]['href']))
+                elif len(tbl_dat.find_all('i')) == 1:
                     strip_it = str(tbl_dat.find_all('i'))
                     if "data-id-resource" in strip_it:
                         re_search = re.search(r'\d+', strip_it)
@@ -109,3 +115,13 @@ def strip_table_body(table):
                     cells.append(tbl_dat.text.strip())
         rows.append(cells)
     return rows
+
+
+def strip_report_id(url: str) -> str:
+    """ This could probably be done a bit neater but IDC currently """
+    url_endpoint = EndPoint.START_LIST.value
+    if url_endpoint in url:
+        extracted_url = re.search(url_endpoint, url)
+        return url[extracted_url.regs[0][1]::]
+    else:
+        return url
