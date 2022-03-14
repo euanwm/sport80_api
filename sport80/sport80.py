@@ -1,4 +1,5 @@
 """ Main file """
+import logging
 from .sport80_http_client import SportEightyHTTP
 
 
@@ -6,8 +7,8 @@ class SportEighty:
     """
     This class enables a variety of functions that can be carried out with a sport80 subdomain.
     """
-    def __init__(self, subdomain: str):
-        self.__http_client = SportEightyHTTP(subdomain)
+    def __init__(self, subdomain: str, debug: logging):
+        self.__http_client = SportEightyHTTP(subdomain, debug_lvl=debug)
 
     def event_index(self) -> list:
         """ Shorthand call """
