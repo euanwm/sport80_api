@@ -2,9 +2,9 @@
 from setuptools import setup
 
 setup(
-    name="pySport80",
+    name="sport80",
     version="0.1.1",
-    description="pyAPI for Sport80",
+    description="Python API interface for the Sport80 sites",
     url="https://github.com/euanwm/sport80_api",
     author="Euan Meston",
     author_email="euanmeston@gmail.com",
