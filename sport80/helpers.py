@@ -123,5 +123,21 @@ def strip_report_id(url: str) -> str:
     if url_endpoint in url:
         extracted_url = re.search(url_endpoint, url)
         return url[extracted_url.regs[0][1]::]
-    else:
-        return url
+    return url
+
+
+def convert_to_json(big_list: list) -> dict:
+    """ Takes the data and converts it to a dict so its easier to handle on a webpage FE """
+    col_heads = big_list[0]
+    dict_to_return = {}
+    for index, line in enumerate(big_list[1::]):
+        dict_to_return[index] = _insert_json_contents(col_heads, line)
+    return dict_to_return
+
+
+def _insert_json_contents(headers: list, contents: list) -> dict:
+    """ Uses the headers supplied to generate the contents of the dict returned"""
+    small_dict = {}
+    for index, details in enumerate(headers):
+        small_dict.update({details: contents[index]})
+    return small_dict

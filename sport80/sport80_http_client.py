@@ -3,7 +3,7 @@ import logging
 from urllib.parse import urljoin
 import requests
 from .pages_enum import EndPoint
-from .helpers import pull_tables
+from .helpers import pull_tables, convert_to_json
 
 
 class SportEightyHTTP:
@@ -35,9 +35,13 @@ class SportEightyHTTP:
         get_page = self.http_session.get(api_url)
         return pull_tables(get_page)
 
-    def get_start_list(self, event_id):
+    def get_start_list(self, event_id, ret_dict=False):
         """ Returns a specific upcoming events start list """
         logging.info("get_start_list called")
         api_url = urljoin(self.domain, EndPoint.START_LIST.value + event_id)
         get_page = self.http_session.get(api_url)
-        return pull_tables(get_page)
+        start_list = pull_tables(get_page)
+        # Option to return a dictionary
+        if ret_dict:
+            return convert_to_json(start_list)
+        return start_list
