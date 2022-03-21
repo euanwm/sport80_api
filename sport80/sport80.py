@@ -7,8 +7,8 @@ class SportEighty:
     """
     This class enables a variety of functions that can be carried out with a sport80 subdomain.
     """
-    def __init__(self, subdomain: str, debug: logging):
-        self.__http_client = SportEightyHTTP(subdomain, debug_lvl=debug)
+    def __init__(self, subdomain: str, ret_dict: bool, debug: logging):
+        self.__http_client = SportEightyHTTP(subdomain, ret_dict=ret_dict, debug_lvl=debug)
 
     def event_index(self) -> list:
         """ Shorthand call """
