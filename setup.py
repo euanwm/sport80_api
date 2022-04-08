@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name="sport80",
-    version="0.1.1",
+    version="0.1.2",
     description="Python API interface for the Sport80 sites",
     url="https://github.com/euanwm/sport80_api",
     author="Euan Meston",

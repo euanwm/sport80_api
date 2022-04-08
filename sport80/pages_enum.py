@@ -9,3 +9,4 @@ class EndPoint(enum.Enum):
     EVENT_RESULTS = f"{EVENT_INDEX}&resource="
     UPCOMING_EVENTS = "events"
     START_LIST = "public_reports/index/"
+    IS_LOGGED_IN = "register/user_status?id_ranking=8"

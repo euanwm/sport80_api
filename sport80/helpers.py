@@ -141,3 +141,11 @@ def _insert_json_contents(headers: list, contents: list) -> dict:
     for index, details in enumerate(headers):
         small_dict.update({details: contents[index]})
     return small_dict
+
+def dump_to_csv(filename: str, data_list: list):
+    full_filename = f"{filename}.csv"
+    with open(full_filename, "w") as csv_file:
+        writer = csv.writer(csv_file, lineterminator='\n')
+        for line in data_list:
+            writer.writerow(line)
+    return full_filename
