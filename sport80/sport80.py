@@ -8,14 +8,14 @@ class SportEighty:
     """
     This class enables a variety of functions that can be carried out with a sport80 subdomain.
     """
-    def __init__(self, subdomain: str, ret_dict: bool = False, debug: logging = logging.WARNING):
-        self.__http_client = SportEightyHTTP(subdomain, ret_dict=ret_dict, debug_lvl=debug)
+    def __init__(self, subdomain: str, debug: logging = logging.WARNING):
+        self.__http_client = SportEightyHTTP(subdomain, debug_lvl=debug)
 
-    def event_index(self) -> Union[list, dict]:
+    def event_index(self, start_date: str, end_date: str):
         """ Shorthand call """
-        return self.__http_client.get_event_index()
+        return self.__http_client.get_event_index(start_date, end_date)
 
-    def event_results(self, event_id: str) -> Union[list, dict]:
+    def event_results(self, event_id: str):
         """ Shorthand call """
         return self.__http_client.get_event_results(event_id)
 
@@ -26,3 +26,7 @@ class SportEighty:
     def start_list(self, event_id: str) -> Union[list, dict]:
         """ Shorthand call """
         return self.__http_client.get_start_list(event_id)
+
+    def rankings_index(self) -> dict:
+        """ Returns a dict containing endpoints for all available ranking categories """
+        return self.__http_client.get_ranking_index()

@@ -7,7 +7,14 @@ from logging import info, debug
 from bs4 import BeautifulSoup
 from requests import Response
 
-from sport80.pages_enum import EndPoint
+from .pages_enum import EndPoint
+
+
+def findall_uuid4(text_body) -> list:
+    """ Returns a list of UUID4 strings from a body of text"""
+    uuid4hex = re.compile(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', re.I)
+    match = uuid4hex.findall(text_body)
+    return match
 
 
 def resolve_to_ip(url: str) -> str:
@@ -141,6 +148,7 @@ def _insert_json_contents(headers: list, contents: list) -> dict:
     for index, details in enumerate(headers):
         small_dict.update({details: contents[index]})
     return small_dict
+
 
 def dump_to_csv(filename: str, data_list: list):
     full_filename = f"{filename}.csv"
