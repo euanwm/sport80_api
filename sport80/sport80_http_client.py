@@ -89,17 +89,16 @@ class SportEightyHTTP:
             start_cat = self._get_rankings_table(start_cat_int)
         return available_end_points
 
-    def rankings_table_post(self, category, start_date, end_date, wt_class):
+    def get_rankings_table(self, category, a_date, z_date, wt_class):
         api_url = f'https://admin-bwl-rankings.sport80.com/api/categories/{category}/rankings/table'
-        payload = {"date_range_start": start_date, "date_range_end": end_date, "weight_class": wt_class}
+        payload = {"date_range_start": a_date, "date_range_end": z_date, "weight_class": wt_class}
         get_page = self.http_session.get(api_url, headers=self.standard_headers)
         return get_page.json()
 
-    def get_rankings(self, wt_class: int, start_date: str, end_date: str):
+    def get_rankings(self, wt_class: int, a_date: str, z_date: str):
         api_url = "https://admin-bwl-rankings.sport80.com/api/categories/all/rankings/table/data"
-        get_page = self.http_session.post(api_url, headers=self.standard_headers, json={"date_range_start": start_date,
-                                                                                        "date_range_end": end_date,
-                                                                                        "weight_class": wt_class})
+        payload = {"date_range_start": a_date, "date_range_end": z_date, "weight_class": wt_class}
+        get_page = self.http_session.post(api_url, headers=self.standard_headers, json=payload)
         if get_page.ok:
             return get_page.json()
 
@@ -117,7 +116,13 @@ class SportEightyHTTP:
         if get_page.ok:
             return get_page.json()
 
-    #### LEGACY CODE THAT STILL WORKS
+    def get_lifter_data(self, lifter_id=129):
+        # todo: make this actually work, think it's server side though
+        api_url = f"https://admin-bwl-rankings.sport80.com/api/athletes/{lifter_id}/table"
+        get_page = self.http_session.get(api_url, headers=self.standard_headers)
+        return get_page.json()
+
+    # LEGACY CODE THAT STILL WORKS
     def get_upcoming_events(self) -> Union[list, dict]:
         """ Returns the upcoming events list """
         logging.info("get_upcoming_events called")
