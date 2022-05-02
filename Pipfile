@@ -7,6 +7,7 @@ name = "pypi"
 pylint = "*"
 requests = "*"
 beautifulsoup4 = "*"
+js2py = "*"
 
 [dev-packages]
 
