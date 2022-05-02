@@ -11,11 +11,11 @@ class SportEighty:
     def __init__(self, subdomain: str, debug: logging = logging.WARNING):
         self.__http_client = SportEightyHTTP(subdomain, debug_lvl=debug)
 
-    def event_index(self, start_date: str, end_date: str):
+    def event_index(self, start_date: str, end_date: str) -> dict:
         """ Shorthand call """
         return self.__http_client.get_event_index(start_date, end_date)
 
-    def event_results(self, event_id: str):
+    def event_results(self, event_id: str) -> dict:
         """ Shorthand call """
         return self.__http_client.get_event_results(event_id)
 

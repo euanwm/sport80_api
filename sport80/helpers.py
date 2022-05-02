@@ -1,20 +1,21 @@
 """
 Helpers library of static functions
 """
+import csv
 import re
 import socket
 from logging import info, debug
 from bs4 import BeautifulSoup
 from requests import Response
+from js2py import eval_js
 
-from .pages_enum import EndPoint
+from .pages_enum import LegacyEndPoint
 
 
-def findall_uuid4(text_body) -> list:
-    """ Returns a list of UUID4 strings from a body of text"""
-    uuid4hex = re.compile(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', re.I)
-    match = uuid4hex.findall(text_body)
-    return match
+def convert_to_py(js_vars: str) -> dict:
+    """ I really don't care at this stage """
+    py_dict = eval_js(js_vars.lstrip('[<script type="application/javascript">').rstrip('</script>]'))
+    return py_dict
 
 
 def resolve_to_ip(url: str) -> str:
@@ -126,7 +127,7 @@ def strip_table_body(table):
 
 def strip_report_id(url: str) -> str:
     """ This could probably be done a bit neater but IDC currently """
-    url_endpoint = EndPoint.START_LIST.value
+    url_endpoint = LegacyEndPoint.START_LIST.value
     if url_endpoint in url:
         extracted_url = re.search(url_endpoint, url)
         return url[extracted_url.regs[0][1]::]
@@ -151,6 +152,11 @@ def _insert_json_contents(headers: list, contents: list) -> dict:
 
 
 def dump_to_csv(filename: str, data_list: list):
+    """
+    :param filename:
+    :param data_list:
+    :return:
+    """
     full_filename = f"{filename}.csv"
     with open(full_filename, "w") as csv_file:
         writer = csv.writer(csv_file, lineterminator='\n')

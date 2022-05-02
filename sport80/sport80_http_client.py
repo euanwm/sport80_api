@@ -2,12 +2,12 @@
 import logging
 import requests
 from typing import Union
-from pprint import pprint
 
 from urllib.parse import urljoin
+from bs4 import BeautifulSoup
 
-from .pages_enum import OpenApiEndpoint, EndPoint
-from .helpers import findall_uuid4, pull_tables, convert_to_json
+from .pages_enum import EndPoint, LegacyEndPoint
+from .helpers import pull_tables, convert_to_json, convert_to_py
 
 
 class SportEightyHTTP:
@@ -18,33 +18,36 @@ class SportEightyHTTP:
         self.domain: str = domain
         self.ret_dict: bool = ret_dict
         logging.basicConfig(level=debug_lvl)
+        self.domain_env = self.pull_domain_env()
         self.standard_headers = self.load_standard_headers()
 
     def load_standard_headers(self):
-        """ Usual shit """
-        # Todo: Extract full JSON object from main page
-        headers = {"X-API-TOKEN": self.acquire_token(),
-                   "authority": "admin-bwl-rankings.sport80.com",
+        """ Standard header payload for each API request """
+        headers = {"X-API-TOKEN": self.domain_env['SERVICES_API_PUBLIC_KEY'],
+                   "authority": self.domain_env['RANKINGS_DOMAIN_URL'],
                    "accept": "application/json",
                    "Content-Type": "application/json"}
         return headers
 
     def app_data(self):
         """ Fetches OpenAPI server details """
-        get_page = self.http_session.get(OpenApiEndpoint.CORE_SERVICES_API_URL.value)
+        get_page = self.http_session.get(self.domain_env['CORE_SERVICE_API_URL'])
         return get_page.json()
 
-    def acquire_token(self):
-        """ Acquires API token from landing page """
-        api_url = urljoin(self.domain, "/public/rankings/")
-        get_page = self.http_session.post(api_url)
-        tokens = findall_uuid4(get_page.text)
-        for uuid in tokens:
-            if self.test_token(uuid):
-                return uuid
+    def pull_domain_env(self) -> dict:
+        """ On both BWL and USAW sites, there is a JS dict needed for the API calls to work """
+        get_page = requests.get(urljoin(self.domain, EndPoint.INDEX_PAGE.value))
+        soup = BeautifulSoup(get_page.content, "html.parser")
+        scripts_in_page = soup.find_all('script')
+        js_extract = []
+        for js_section in scripts_in_page:
+            if "application/javascript" in js_section.attrs.values():
+                js_extract.append(js_section)
+        if len(js_extract) == 1:
+            return convert_to_py(str(js_extract))
 
     def test_token(self, token: str):
-        api_url = "https://admin-bwl-rankings.sport80.com/api/categories/featured"
+        api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.RANKINGS_INDEX.value)
         get_page = self.http_session.get(api_url, headers={"X-API-TOKEN": token})
         if get_page.status_code == 200:
             return True
@@ -56,24 +59,21 @@ class SportEightyHTTP:
             return get_page.json()
 
     def get_weight_class(self):
-        api_url = "https://admin-bwl-rankings.sport80.com/api/categories/rankings"
+        api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.RANKINGS_DATA.value)
         get_page = self.http_session.get(api_url, headers=self.standard_headers)
         if get_page.ok:
             return get_page.json()
-
-    def lookup_lifter(self, lifter_id):
-        """ Takes a lifter id and returns their data """
 
     def get_ranking_index(self):
         """ Working """
-        api_url = "https://admin-bwl-rankings.sport80.com/api/categories/featured"
+        api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.RANKINGS_INDEX.value)
         get_page = self.http_session.get(api_url, headers=self.standard_headers)
         if get_page.ok:
             return get_page.json()
 
-    def _get_rankings_table(self, cat):
+    def _get_rankings_table(self, category):
         """ Simple GET call for the ranking category specified """
-        api_url = f"https://admin-bwl-rankings.sport80.com/api/categories/{cat}/rankings/table"
+        api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.rankings_url(category))
         get_page = self.http_session.get(api_url, headers=self.standard_headers)
         return get_page.json()
 
@@ -90,20 +90,21 @@ class SportEightyHTTP:
         return available_end_points
 
     def get_rankings_table(self, category, a_date, z_date, wt_class):
-        api_url = f'https://admin-bwl-rankings.sport80.com/api/categories/{category}/rankings/table'
+        api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.rankings_url(category))
         payload = {"date_range_start": a_date, "date_range_end": z_date, "weight_class": wt_class}
         get_page = self.http_session.get(api_url, headers=self.standard_headers)
         return get_page.json()
 
     def get_rankings(self, wt_class: int, a_date: str, z_date: str):
-        api_url = "https://admin-bwl-rankings.sport80.com/api/categories/all/rankings/table/data"
+        api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.ALL_RANKINGS.value)
         payload = {"date_range_start": a_date, "date_range_end": z_date, "weight_class": wt_class}
         get_page = self.http_session.post(api_url, headers=self.standard_headers, json=payload)
         if get_page.ok:
             return get_page.json()
 
     def get_event_index(self, start_date: str, end_date: str) -> dict:
-        api_url = "https://admin-bwl-rankings.sport80.com/api/events/table/data"
+        """ start_date="2022-01-01", end_date="2022-12-31" """
+        api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.EVENT_INDEX.value)
         payload = {"date_range_start": start_date, "date_range_end": end_date}
         get_page = self.http_session.post(api_url, headers=self.standard_headers, json=payload)
         if get_page.ok:
@@ -111,14 +112,14 @@ class SportEightyHTTP:
 
     def get_event_results(self, event_id):
         # Todo: add in something to collate pages together
-        api_url = f"https://admin-bwl-rankings.sport80.com/api/events/{event_id}/table/data"
+        api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.event_results_url(event_id))
         get_page = self.http_session.post(api_url, headers=self.standard_headers)
         if get_page.ok:
             return get_page.json()
 
-    def get_lifter_data(self, lifter_id=129):
-        # todo: make this actually work, think it's server side though
-        api_url = f"https://admin-bwl-rankings.sport80.com/api/athletes/{lifter_id}/table"
+    def get_lifter_data(self, lifter_id):
+        # Todo: make this actually work, think it's server side though
+        api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.lifter_url(lifter_id))
         get_page = self.http_session.get(api_url, headers=self.standard_headers)
         return get_page.json()
 
@@ -126,7 +127,7 @@ class SportEightyHTTP:
     def get_upcoming_events(self) -> Union[list, dict]:
         """ Returns the upcoming events list """
         logging.info("get_upcoming_events called")
-        api_url = urljoin(self.domain, EndPoint.UPCOMING_EVENTS.value)
+        api_url = urljoin(self.domain, LegacyEndPoint.UPCOMING_EVENTS.value)
         get_page = self.http_session.get(api_url)
         upcoming_events = pull_tables(get_page)
         if self.ret_dict:
@@ -136,7 +137,7 @@ class SportEightyHTTP:
     def get_start_list(self, event_id: str) -> Union[list, dict]:
         """ Returns a specific upcoming events start list """
         logging.info("get_start_list called")
-        api_url = urljoin(self.domain, EndPoint.START_LIST.value + event_id)
+        api_url = urljoin(self.domain, LegacyEndPoint.START_LIST.value + event_id)
         get_page = self.http_session.get(api_url)
         start_list = pull_tables(get_page)
         if self.ret_dict:
