@@ -3,12 +3,12 @@ from setuptools import setup
 
 setup(
     name="sport80",
-    version="0.1.2",
+    version="2.1.0",
     description="Python API interface for the Sport80 sites",
     url="https://github.com/euanwm/sport80_api",
     author="Euan Meston",
     author_email="euanmeston@gmail.com",
-    license="MIT",
+    license="BSD 3",
     install_requires=["requests",
                       "beautifulsoup4"],
     classifiers=["Programming Language :: Python :: 3.8",

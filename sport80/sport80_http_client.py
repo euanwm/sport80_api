@@ -111,17 +111,34 @@ class SportEightyHTTP:
             return get_page.json()
 
     def get_event_results(self, event_id):
-        # Todo: add in something to collate pages together
+        """ Uses the integer that follows the event url API """
         api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.event_results_url(event_id))
         get_page = self.http_session.post(api_url, headers=self.standard_headers)
+        if get_page.ok:
+            return self.__collate_results(get_page.json())
+
+    def __collate_results(self, page_one: dict) -> dict:
+        """ Cycles through the passed dict and checks for a URL """
+        all_pages = {0: page_one}
+        current_page = page_one
+        index = 1
+        while current_page['next_page_url']:
+            all_pages[index] = current_page = self.__next_page(current_page['next_page_url'])
+            index = + 1
+        return all_pages
+
+    def __next_page(self, next_url: str) -> dict:
+        """ Designed around the events dict """
+        get_page = self.http_session.post(next_url, headers=self.standard_headers)
         if get_page.ok:
             return get_page.json()
 
     def get_lifter_data(self, lifter_id):
-        # Todo: make this actually work, think it's server side though
+        """ Historical performance of a lifter  """
         api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.lifter_url(lifter_id))
-        get_page = self.http_session.get(api_url, headers=self.standard_headers)
-        return get_page.json()
+        get_page = self.http_session.post(api_url, headers=self.standard_headers)
+        if get_page.ok:
+            return self.__collate_results(get_page.json())
 
     # LEGACY CODE THAT STILL WORKS
     def get_upcoming_events(self) -> Union[list, dict]:

@@ -29,7 +29,7 @@ class EndPoint(enum.Enum):
     @staticmethod
     def lifter_url(lifter_id) -> str:
         """ Simple method for creating the correct API call """
-        api_url = f"/api/athletes/{lifter_id}/table"
+        api_url = f"/api/athletes/{lifter_id}/table/data"
         return api_url
 
     @staticmethod
