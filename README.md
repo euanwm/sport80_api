@@ -1,1 +1,1 @@
-Currently this only supports the British Weightlifting (BWL) sport80 subdomain but I (maybe "_**we**_", if people contribute) plan to add USAW and other sporting federation functionality.
+This now supports both BWL and USAW Sport80 pages. I'll write a more detailed readme once i've tidied things up a bit more.
