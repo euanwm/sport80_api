@@ -10,7 +10,8 @@ setup(
     author_email="euanmeston@gmail.com",
     license="BSD 3",
     install_requires=["requests",
-                      "beautifulsoup4"],
+                      "beautifulsoup4",
+                      "js2py"],
     classifiers=["Programming Language :: Python :: 3.8",
                  "Programming Language :: Python :: 3.9"],
     python_requires='>=3.8'
