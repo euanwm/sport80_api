@@ -12,6 +12,18 @@ from js2py import eval_js
 from .pages_enum import LegacyEndPoint
 
 
+def collate_index(page_data: dict) -> list:
+    """ Combines the data values """
+    data_list: list = []
+    for stuff in page_data:
+        data_list.append(page_data[stuff]['data'])
+    final_list: list = []
+    for dicty_bois in data_list:
+        for single_dict in dicty_bois:
+            final_list.append(single_dict)
+    return final_list
+
+
 def convert_to_py(js_vars: str) -> dict:
     """ I really don't care at this stage """
     py_dict = eval_js(js_vars.lstrip('[<script type="application/javascript">').rstrip('</script>]'))

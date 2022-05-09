@@ -1,13 +1,13 @@
 """ Busy backend shit """
 import logging
 import requests
-from typing import Union
+from typing import Union, Optional
 
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
 from .pages_enum import EndPoint, LegacyEndPoint
-from .helpers import pull_tables, convert_to_json, convert_to_py
+from .helpers import pull_tables, convert_to_json, convert_to_py, collate_index
 
 
 class SportEightyHTTP:
@@ -102,34 +102,37 @@ class SportEightyHTTP:
         if get_page.ok:
             return get_page.json()
 
-    def get_event_index(self, start_date: str, end_date: str) -> dict:
-        """ start_date="2022-01-01", end_date="2022-12-31" """
+    def get_event_index(self, year: int) -> list:
+        """ Fetches the event index per year """
         api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.EVENT_INDEX.value)
-        payload = {"date_range_start": start_date, "date_range_end": end_date}
+        payload = {"date_range_start": f"{year}-01-01", "date_range_end": f"{year}-12-31"}
         get_page = self.http_session.post(api_url, headers=self.standard_headers, json=payload)
         if get_page.ok:
-            return get_page.json()
+            page_data = self.__collate_results(get_page.json(), payload)
+            collated_index = collate_index(page_data)
+            return collated_index
 
-    def get_event_results(self, event_id):
+    def get_event_results(self, event_id: int):
         """ Uses the integer that follows the event url API """
         api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.event_results_url(event_id))
         get_page = self.http_session.post(api_url, headers=self.standard_headers)
         if get_page.ok:
             return self.__collate_results(get_page.json())
 
-    def __collate_results(self, page_one: dict) -> dict:
+    def __collate_results(self, page_one: dict, payload: Optional[dict] = None) -> dict:
         """ Cycles through the passed dict and checks for a URL """
         all_pages = {0: page_one}
         current_page = page_one
         index = 1
         while current_page['next_page_url']:
-            all_pages[index] = current_page = self.__next_page(current_page['next_page_url'])
+            all_pages[index] = current_page = self.__next_page(current_page['next_page_url'], payload)
             index = + 1
         return all_pages
 
-    def __next_page(self, next_url: str) -> dict:
+    def __next_page(self, next_url: str, payload: dict) -> dict:
         """ Designed around the events dict """
-        get_page = self.http_session.post(next_url, headers=self.standard_headers)
+        payload = {"date_range_start": f"{2021}-01-01", "date_range_end": f"{2021}-12-31"}
+        get_page = self.http_session.post(next_url, headers=self.standard_headers, json=payload)
         if get_page.ok:
             return get_page.json()
 
