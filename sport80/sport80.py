@@ -11,20 +11,20 @@ class SportEighty:
     def __init__(self, subdomain: str, debug: logging = logging.WARNING):
         self.__http_client = SportEightyHTTP(subdomain, debug_lvl=debug)
 
-    def event_index(self, start_date: str, end_date: str) -> dict:
-        """ Shorthand call """
-        return self.__http_client.get_event_index(start_date, end_date)
+    def event_index(self, year: int) -> dict:
+        """ Now working """
+        return self.__http_client.get_event_index(year)
 
-    def event_results(self, event_id: str) -> dict:
-        """ Shorthand call """
-        return self.__http_client.get_event_results(event_id)
+    def event_results(self, action_route: str) -> dict:
+        """ Now working """
+        return self.__http_client.get_event_results(action_route)
 
     def upcoming_events(self) -> Union[list, dict]:
-        """ Shorthand call """
+        """ Shorthand call - kinda works """
         return self.__http_client.get_upcoming_events()
 
     def start_list(self, event_id: str) -> Union[list, dict]:
-        """ Shorthand call """
+        """ Shorthand call - kinda works """
         return self.__http_client.get_start_list(event_id)
 
     def rankings_index(self) -> dict:

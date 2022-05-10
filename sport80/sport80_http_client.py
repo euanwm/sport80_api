@@ -102,7 +102,7 @@ class SportEightyHTTP:
         if get_page.ok:
             return get_page.json()
 
-    def get_event_index(self, year: int) -> list:
+    def get_event_index(self, year: int) -> dict:
         """ Fetches the event index per year """
         api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.EVENT_INDEX.value)
         payload = {"date_range_start": f"{year}-01-01", "date_range_end": f"{year}-12-31"}
@@ -112,12 +112,15 @@ class SportEightyHTTP:
             collated_index = collate_index(page_data)
             return collated_index
 
-    def get_event_results(self, event_id: int):
+    def get_event_results(self, action_route: str):
         """ Uses the integer that follows the event url API """
+        event_id: str = action_route.split('/')[-1]
         api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.event_results_url(event_id))
         get_page = self.http_session.post(api_url, headers=self.standard_headers)
+        collated_pages = self.__collate_results(get_page.json())
+        combined_data = collate_index(collated_pages)
         if get_page.ok:
-            return self.__collate_results(get_page.json())
+            return combined_data
 
     def __collate_results(self, page_one: dict, payload: Optional[dict] = None) -> dict:
         """ Cycles through the passed dict and checks for a URL """
@@ -126,12 +129,11 @@ class SportEightyHTTP:
         index = 1
         while current_page['next_page_url']:
             all_pages[index] = current_page = self.__next_page(current_page['next_page_url'], payload)
-            index = + 1
+            index = index + 1
         return all_pages
 
     def __next_page(self, next_url: str, payload: dict) -> dict:
         """ Designed around the events dict """
-        payload = {"date_range_start": f"{2021}-01-01", "date_range_end": f"{2021}-12-31"}
         get_page = self.http_session.post(next_url, headers=self.standard_headers, json=payload)
         if get_page.ok:
             return get_page.json()

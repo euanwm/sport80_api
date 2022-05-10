@@ -12,7 +12,15 @@ from js2py import eval_js
 from .pages_enum import LegacyEndPoint
 
 
-def collate_index(page_data: dict) -> list:
+def list_to_dict(dict_list: list[dict]) -> dict:
+    """ Takes a list of dicts and puts them into an index dict """
+    new_dict: dict = {}
+    for index, contents in enumerate(dict_list):
+        new_dict[index] = contents
+    return new_dict
+
+
+def collate_index(page_data: dict) -> dict:
     """ Combines the data values """
     data_list: list = []
     for stuff in page_data:
@@ -21,7 +29,8 @@ def collate_index(page_data: dict) -> list:
     for dicty_bois in data_list:
         for single_dict in dicty_bois:
             final_list.append(single_dict)
-    return final_list
+    switch_to_dict = list_to_dict(final_list)
+    return switch_to_dict
 
 
 def convert_to_py(js_vars: str) -> dict:
@@ -164,13 +173,9 @@ def _insert_json_contents(headers: list, contents: list) -> dict:
 
 
 def dump_to_csv(filename: str, data_list: list):
-    """
-    :param filename:
-    :param data_list:
-    :return:
-    """
+    """ This is really lazy and i'll probably remove this """
     full_filename = f"{filename}.csv"
-    with open(full_filename, "w") as csv_file:
+    with open(full_filename, "w", encoding='utf-8') as csv_file:
         writer = csv.writer(csv_file, lineterminator='\n')
         for line in data_list:
             writer.writerow(line)
