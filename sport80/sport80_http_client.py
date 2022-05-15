@@ -13,10 +13,10 @@ from .helpers import pull_tables, convert_to_json, convert_to_py, collate_index
 class SportEightyHTTP:
     """ Contains all the big annoying functions so the main API file is nice and neat """
 
-    def __init__(self, domain: str, ret_dict: bool = False, debug_lvl: logging = logging.WARNING):
+    def __init__(self, domain: str, return_dict: bool = True, debug_lvl: logging = logging.WARNING):
         self.http_session = requests.Session()
         self.domain: str = domain
-        self.ret_dict: bool = ret_dict
+        self.ret_dict: bool = return_dict
         logging.basicConfig(level=debug_lvl)
         self.domain_env = self.pull_domain_env()
         self.standard_headers = self.load_standard_headers()
@@ -69,7 +69,7 @@ class SportEightyHTTP:
         api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.RANKINGS_INDEX.value)
         get_page = self.http_session.get(api_url, headers=self.standard_headers)
         if get_page.ok:
-            return get_page.json()
+            return get_page.json()['cards']
 
     def _get_rankings_table(self, category):
         """ Simple GET call for the ranking category specified """
@@ -112,9 +112,10 @@ class SportEightyHTTP:
             collated_index = collate_index(page_data)
             return collated_index
 
-    def get_event_results(self, action_route: str):
+    def get_event_results(self, event_dict: dict):
         """ Uses the integer that follows the event url API """
-        event_id: str = action_route.split('/')[-1]
+        # todo: below line needs serious refactoring
+        event_id: str = event_dict['action'][0]['route'].split('/')[-1]
         api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.event_results_url(event_id))
         get_page = self.http_session.post(api_url, headers=self.standard_headers)
         collated_pages = self.__collate_results(get_page.json())

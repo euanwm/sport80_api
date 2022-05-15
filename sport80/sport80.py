@@ -15,16 +15,16 @@ class SportEighty:
         """ Now working """
         return self.__http_client.get_event_index(year)
 
-    def event_results(self, action_route: str) -> dict:
+    def event_results(self, event_dict: dict) -> dict:
         """ Now working """
-        return self.__http_client.get_event_results(action_route)
+        return self.__http_client.get_event_results(event_dict)
 
     def upcoming_events(self) -> Union[list, dict]:
-        """ Shorthand call - kinda works """
+        """ Now working """
         return self.__http_client.get_upcoming_events()
 
     def start_list(self, event_id: str) -> Union[list, dict]:
-        """ Shorthand call - kinda works """
+        """ Now working """
         return self.__http_client.get_start_list(event_id)
 
     def rankings_index(self) -> dict:
