@@ -8,8 +8,8 @@ class SportEighty:
     """
     This class enables a variety of functions that can be carried out with a sport80 subdomain.
     """
-    def __init__(self, subdomain: str, debug: logging = logging.WARNING):
-        self.__http_client = SportEightyHTTP(subdomain, debug_lvl=debug)
+    def __init__(self, subdomain: str, return_dict=True, debug: logging = logging.WARNING):
+        self.__http_client = SportEightyHTTP(subdomain, return_dict=return_dict, debug_lvl=debug)
 
     def event_index(self, year: int) -> dict:
         """ Now working """

@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
 from .pages_enum import EndPoint, LegacyEndPoint
-from .helpers import pull_tables, convert_to_json, convert_to_py, collate_index
+from .helpers import pull_tables, convert_to_json, convert_to_py, collate_index, event_dict_to_list
 
 
 class SportEightyHTTP:
@@ -16,7 +16,7 @@ class SportEightyHTTP:
     def __init__(self, domain: str, return_dict: bool = True, debug_lvl: logging = logging.WARNING):
         self.http_session = requests.Session()
         self.domain: str = domain
-        self.ret_dict: bool = return_dict
+        self.return_dict: bool = return_dict
         logging.basicConfig(level=debug_lvl)
         self.domain_env = self.pull_domain_env()
         self.standard_headers = self.load_standard_headers()
@@ -120,8 +120,10 @@ class SportEightyHTTP:
         get_page = self.http_session.post(api_url, headers=self.standard_headers)
         collated_pages = self.__collate_results(get_page.json())
         combined_data = collate_index(collated_pages)
-        if get_page.ok:
+        if get_page.ok and self.return_dict:
             return combined_data
+        if get_page.ok and not self.return_dict:
+            return event_dict_to_list(combined_data)
 
     def __collate_results(self, page_one: dict, payload: Optional[dict] = None) -> dict:
         """ Cycles through the passed dict and checks for a URL """
@@ -153,7 +155,7 @@ class SportEightyHTTP:
         api_url = urljoin(self.domain, LegacyEndPoint.UPCOMING_EVENTS.value)
         get_page = self.http_session.get(api_url)
         upcoming_events = pull_tables(get_page)
-        if self.ret_dict:
+        if self.return_dict:
             return convert_to_json(upcoming_events)
         return upcoming_events
 
@@ -163,6 +165,6 @@ class SportEightyHTTP:
         api_url = urljoin(self.domain, LegacyEndPoint.START_LIST.value + event_id)
         get_page = self.http_session.get(api_url)
         start_list = pull_tables(get_page)
-        if self.ret_dict:
+        if self.return_dict:
             return convert_to_json(start_list)
         return start_list

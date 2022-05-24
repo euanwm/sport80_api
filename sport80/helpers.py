@@ -12,6 +12,22 @@ from js2py import eval_js
 from .pages_enum import LegacyEndPoint
 
 
+def __single_dict_to_list(single_dict: dict) -> list:
+    """Used for switching the dict shit to csv/list shit"""
+    list_shit: list = []
+    for _, contents in single_dict.items():
+        list_shit.append(contents)
+    return list_shit
+
+
+def event_dict_to_list(big_dict: dict) -> list:
+    """Gib meh event result dict"""
+    big_list: list = [[x for x in big_dict[0]]]
+    for _, contents in big_dict.items():
+        big_list.append(__single_dict_to_list(contents))
+    return big_list
+
+
 def list_to_dict(dict_list: list[dict]) -> dict:
     """ Takes a list of dicts and puts them into an index dict """
     new_dict: dict = {}
