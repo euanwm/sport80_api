@@ -15,7 +15,7 @@ class SportEighty:
         """ Now working """
         return self.__http_client.get_event_index(year)
 
-    def event_results(self, event_dict: dict) -> dict:
+    def event_results(self, event_dict: dict) -> Union[list, dict]:
         """ Now working """
         return self.__http_client.get_event_results(event_dict)
 
