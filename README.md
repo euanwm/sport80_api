@@ -8,6 +8,6 @@ from sport80 import SportEighty
 new_funcs = SportEighty("https://bwl.sport80.com")
 
 index_list = new_funcs.event_index(2022)[0]
-event_results = new_funcs.event_results(index_list['action'][0]['route'])
+event_results = new_funcs.event_results(index_list)
 print(event_results)
 ```
