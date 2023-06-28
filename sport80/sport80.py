@@ -30,3 +30,7 @@ class SportEighty:
     def rankings_index(self) -> dict:
         """ Returns a dict containing endpoints for all available ranking categories """
         return self.__http_client.get_ranking_index()
+
+    def lifter_history(self, lifter_id: int) -> Union[list, dict]:
+        """ Returns a dict containing a lifter history. The lifter_id does NOT correlate to the membership number """
+        return self.__http_client.get_lifter_data(lifter_id)
