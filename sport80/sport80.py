@@ -34,3 +34,11 @@ class SportEighty:
     def lifter_history(self, lifter_id: int) -> Union[list, dict]:
         """ Returns a dict containing a lifter history. The lifter_id does NOT correlate to the membership number """
         return self.__http_client.get_lifter_data(lifter_id)
+
+    def rankings(self, wt_class: int, a_date: str, z_date: str, region: int) -> dict:
+        """ Returns a dict containing the rankings table for the specified weight class and date range """
+        return self.__http_client.get_rankings(wt_class, a_date, z_date, region)
+
+    def ranking_filters(self):
+        """ I'll fill this out eventually """
+        return self.__http_client.get_ranking_filters()['filters']
