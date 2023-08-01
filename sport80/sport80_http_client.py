@@ -71,7 +71,7 @@ class SportEightyHTTP:
         if get_page.ok:
             return get_page.json()['cards']
 
-    def _get_rankings_table(self, category):
+    def __get_rankings_table(self, category):
         """ Simple GET call for the ranking category specified """
         api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.rankings_url(category))
         get_page = self.http_session.get(api_url, headers=self.standard_headers)
@@ -80,13 +80,13 @@ class SportEightyHTTP:
     def quick_ranking_search(self):
         """ Cycles through the API endpoint available for rankings table """
         start_cat_int = 1
-        start_cat = self._get_rankings_table(start_cat_int)
+        start_cat = self.__get_rankings_table(start_cat_int)
         err_msg = "An error occurred"
         available_end_points = {}
         while err_msg not in start_cat['title']:
             available_end_points.update({start_cat['title']: start_cat['data_url']})
             start_cat_int += 1
-            start_cat = self._get_rankings_table(start_cat_int)
+            start_cat = self.__get_rankings_table(start_cat_int)
         return available_end_points
 
     def get_rankings_table(self, category, a_date, z_date, wt_class):
@@ -97,6 +97,7 @@ class SportEightyHTTP:
 
     def get_rankings(self, wt_class: int, a_date: str, z_date: str, region: int):
         """ Fetches the rankings table for the specified weight class and date range """
+        # todo: have this handle a kwargs dict instead of a bunch of args
         api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.ALL_RANKINGS.value + "?p=0&l=1000&sort=&d=&s=")
         payload = {"date_range_start": a_date, "date_range_end": z_date, "weight_class": wt_class, "region": region}
         get_page = self.http_session.post(api_url, headers=self.standard_headers, json=payload)

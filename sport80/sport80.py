@@ -37,8 +37,10 @@ class SportEighty:
 
     def rankings(self, wt_class: int, a_date: str, z_date: str, region: int) -> dict:
         """ Returns a dict containing the rankings table for the specified weight class and date range """
+        # todo: have this handle a kwargs dict instead of a bunch of args
         return self.__http_client.get_rankings(wt_class, a_date, z_date, region)
 
     def ranking_filters(self):
-        """ I'll fill this out eventually """
+        """ Pulls all the available ranking filters """
+        # todo: make this return an object or some shit
         return self.__http_client.get_ranking_filters()['filters']
