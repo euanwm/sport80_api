@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name="sport80",
-    version="2.2.2",
+    version="2.2.3",
     description="Python API interface for the Sport80 sites",
     long_description='Intentionally empty',
     url="https://github.com/euanwm/sport80_api",
@@ -13,7 +13,6 @@ setup(
     install_requires=["requests",
                       "beautifulsoup4",
                       "js2py"],
-    classifiers=["Programming Language :: Python :: 3.8",
-                 "Programming Language :: Python :: 3.9"],
+    classifiers=["Programming Language :: Python :: 3.11"],
     python_requires='>=3.8'
 )
