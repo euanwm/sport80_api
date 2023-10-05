@@ -95,11 +95,12 @@ class SportEightyHTTP:
         get_page = self.http_session.get(api_url, headers=self.standard_headers)
         return get_page.json()
 
-    def get_rankings(self, wt_class: int, a_date: str, z_date: str, region: int):
-        """ Fetches the rankings table for the specified weight class and date range """
-        # todo: have this handle a kwargs dict instead of a bunch of args
+    def get_rankings(self, a_date: str, z_date: str, additional_args=None) -> dict:
+        """ Returns a dict containing the rankings for the given date range """
         api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.ALL_RANKINGS.value + "?p=0&l=1000&sort=&d=&s=")
-        payload = {"date_range_start": a_date, "date_range_end": z_date, "weight_class": wt_class, "region": region}
+        payload = {"date_range_start": a_date, "date_range_end": z_date}
+        if additional_args:
+            payload.update(additional_args)
         get_page = self.http_session.post(api_url, headers=self.standard_headers, json=payload)
         if get_page.ok:
             return self.__collate_results(get_page.json())

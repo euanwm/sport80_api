@@ -8,6 +8,7 @@ class SportEighty:
     """
     This class enables a variety of functions that can be carried out with a sport80 subdomain.
     """
+
     def __init__(self, subdomain: str, return_dict=True, debug: logging = logging.WARNING):
         self.__http_client = SportEightyHTTP(subdomain, return_dict=return_dict, debug_lvl=debug)
 
@@ -35,10 +36,15 @@ class SportEighty:
         """ Returns a dict containing a lifter history. The lifter_id does NOT correlate to the membership number """
         return self.__http_client.get_lifter_data(lifter_id)
 
-    def rankings(self, wt_class: int, a_date: str, z_date: str, region: int) -> dict:
-        """ Returns a dict containing the rankings table for the specified weight class and date range """
-        # todo: have this handle a kwargs dict instead of a bunch of args
-        return self.__http_client.get_rankings(wt_class, a_date, z_date, region)
+    def rankings(self, a_date: str, z_date: str, additional_args: dict = None) -> dict:
+        """
+        Returns a dict containing the rankings for the given date range
+        :param a_date:  Start date in format YYYY-MM-DD
+        :param z_date:  End date in format YYYY-MM-DD
+        :param additional_args:  Additional arguments such as weight category available from ranking_filters()
+        :return:  dict of rankings
+        """
+        return self.__http_client.get_rankings(a_date, z_date, additional_args)
 
     def ranking_filters(self):
         """ Pulls all the available ranking filters """
