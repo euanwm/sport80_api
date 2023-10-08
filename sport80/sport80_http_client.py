@@ -95,15 +95,19 @@ class SportEightyHTTP:
         get_page = self.http_session.get(api_url, headers=self.standard_headers)
         return get_page.json()
 
-    def get_rankings(self, a_date: str, z_date: str, additional_args=None) -> dict:
+    def get_rankings(self, a_date: str, z_date: str, additional_args=None) -> list[dict]:
         """ Returns a dict containing the rankings for the given date range """
+        results = []
         api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.ALL_RANKINGS.value + "?p=0&l=1000&sort=&d=&s=")
         payload = {"date_range_start": a_date, "date_range_end": z_date}
         if additional_args:
             payload.update(additional_args)
         get_page = self.http_session.post(api_url, headers=self.standard_headers, json=payload)
         if get_page.ok:
-            return self.__collate_results(get_page.json())
+            front_page = get_page.json()
+            collated_pages = self.__collate_results(front_page, payload)
+            results = [item for sublist in collated_pages.values() for item in sublist['data']]
+        return results
 
     def get_ranking_filters(self):
         api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], "/api/categories/rankings/table")
@@ -139,7 +143,7 @@ class SportEightyHTTP:
         all_pages = {0: page_one}
         current_page = page_one
         index = 1
-        while current_page['next_page_url']:
+        while current_page['next_page_url'] is not None:
             all_pages[index] = current_page = self.__next_page(current_page['next_page_url'], payload)
             index = index + 1
         return all_pages
