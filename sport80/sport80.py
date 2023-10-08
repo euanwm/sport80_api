@@ -36,13 +36,13 @@ class SportEighty:
         """ Returns a dict containing a lifter history. The lifter_id does NOT correlate to the membership number """
         return self.__http_client.get_lifter_data(lifter_id)
 
-    def rankings(self, a_date: str, z_date: str, additional_args: dict = None) -> dict:
+    def rankings(self, a_date: str, z_date: str, additional_args: dict = None) -> list[dict]:
         """
         Returns a dict containing the rankings for the given date range
         :param a_date:  Start date in format YYYY-MM-DD
         :param z_date:  End date in format YYYY-MM-DD
         :param additional_args:  Additional arguments such as weight category available from ranking_filters()
-        :return:  dict of rankings
+        :return:  List of dicts containing the rankings
         """
         return self.__http_client.get_rankings(a_date, z_date, additional_args)
 
