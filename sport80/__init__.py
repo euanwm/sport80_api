@@ -4,8 +4,8 @@ Totally unofficial Sport80 API package. Meh.
 
 from .sport80 import SportEighty
 from .sport80_http_client import SportEightyHTTP
-from .helpers import pull_tables, convert_to_json, convert_to_py
+from .helpers import pull_tables
 from .pages_enum import EndPoint
 
-__version__ = "2.2.4"
+__version__ = "2.2.5"
 __author__ = "Euan Meston"

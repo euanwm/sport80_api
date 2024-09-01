@@ -1,11 +1,10 @@
 """ Busy backend shit """
 import logging
-import requests
 import json
-from typing import Union, Optional
 import re
-
 from urllib.parse import urljoin
+from typing import Union, Optional
+import requests
 
 from .pages_enum import EndPoint, LegacyEndPoint
 from .helpers import pull_tables, convert_to_json, collate_index, event_dict_to_list
