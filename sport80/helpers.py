@@ -7,7 +7,7 @@ import socket
 from logging import info, debug
 from bs4 import BeautifulSoup
 from requests import Response
-from js2py import eval_js
+# from js2py import eval_js
 
 from .pages_enum import LegacyEndPoint
 
@@ -47,12 +47,6 @@ def collate_index(page_data: dict) -> dict:
             final_list.append(single_dict)
     switch_to_dict = list_to_dict(final_list)
     return switch_to_dict
-
-
-def convert_to_py(js_vars: str) -> dict:
-    """ I really don't care at this stage """
-    py_dict = eval_js(js_vars.lstrip('[<script type="application/javascript">').rstrip('</script>]'))
-    return py_dict
 
 
 def resolve_to_ip(url: str) -> str:

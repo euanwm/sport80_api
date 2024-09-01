@@ -1,13 +1,14 @@
 """ Busy backend shit """
 import logging
 import requests
+import json
 from typing import Union, Optional
+import re
 
 from urllib.parse import urljoin
-from bs4 import BeautifulSoup
 
 from .pages_enum import EndPoint, LegacyEndPoint
-from .helpers import pull_tables, convert_to_json, convert_to_py, collate_index, event_dict_to_list
+from .helpers import pull_tables, convert_to_json, collate_index, event_dict_to_list
 
 
 class SportEightyHTTP:
@@ -37,14 +38,16 @@ class SportEightyHTTP:
     def pull_domain_env(self) -> dict:
         """ On both BWL and USAW sites, there is a JS dict needed for the API calls to work """
         get_page = requests.get(urljoin(self.domain, EndPoint.INDEX_PAGE.value))
-        soup = BeautifulSoup(get_page.content, "html.parser")
-        scripts_in_page = soup.find_all('script')
-        js_extract = []
-        for js_section in scripts_in_page:
-            if "application/javascript" in js_section.attrs.values():
-                js_extract.append(js_section)
-        if len(js_extract) == 1:
-            return convert_to_py(str(js_extract))
+        page_data = get_page.text
+        reggie = re.compile(r"window.env = ({.*?});", re.DOTALL)
+        match = reggie.search(page_data)
+        if match:
+            try:
+                py_dict = json.loads(match.group(1))
+                return py_dict
+            except json.JSONDecodeError:
+                return {}
+        return {}
 
     def test_token(self, token: str):
         api_url = urljoin(self.domain_env['RANKINGS_DOMAIN_URL'], EndPoint.RANKINGS_INDEX.value)
