@@ -7,5 +7,5 @@ from .sport80_http_client import SportEightyHTTP
 from .helpers import pull_tables
 from .pages_enum import EndPoint
 
-__version__ = "2.2.5"
+__version__ = "2.2.6"
 __author__ = "Euan Meston"
